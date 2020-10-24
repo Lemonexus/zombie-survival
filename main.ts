@@ -305,3 +305,12 @@ img`
 
 scene.setBackgroundColor(7)
 tiles.setTilemap(tilemap`level_1`)
+addZombie()
+
+//words.exe
+
+function addZombie(){
+    let zombieNumber = randint(0, zombieImgs.length)
+   let zombie = sprites.create(zombieImgs[zombieNumber], SpriteKind.Enemy) 
+   zombie.follow(oldLady)
+}
