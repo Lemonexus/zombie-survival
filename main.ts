@@ -303,14 +303,101 @@ img`
     `
 ]
 
+let zombieSayings = [
+    "Arr",
+    "Grr",
+    "scary text",
+    "boo",
+    "spooky word",
+    "brainsss",
+    "i want hungry",
+    "this is a rare text",
+    "should zombies even be speaking",
+    "how am i speaking",
+    "argggggg",
+    "zombie noises.mp4",
+    "more brains",
+    "i want more hungry",
+    "hungryyyyyy",
+    "my name is ashley",
+    "i am just a piece of code",
+    "noises.mp4",
+    "hi",
+    "i want you to go bye"
+]
+
 scene.setBackgroundColor(7)
 tiles.setTilemap(tilemap`level_1`)
-addZombie()
+let wave = 1
+nextWave()
+
+game.onUpdate(function() {
+    let zombies = sprites.allOfKind(SpriteKind.Enemy)
+    
+    for(let z of zombies){
+        if (z.vx > 0){
+            let right = sprites.readDataImage(z, "costume-right")
+            z.setImage(right)
+        }
+        else{
+            let left = sprites.readDataImage(z, "costume-left")
+            z.setImage(left)
+        }
+    }
+})
+
+game.onUpdateInterval(1500, function() {
+    let zombies = sprites.allOfKind(SpriteKind.Enemy)
+    let randomZombie = zombies[randint(0, zombies.length - 1)]
+    let randomSaying = zombieSayings[randint(0, zombieSayings.length - 1)]
+    randomZombie.say(randomSaying, 1000)
+})
+
+info.onCountdownEnd(function() {
+    wave = wave + 1
+    if (wave == 4){
+        game.splash("you were pathetic so the army came to save you")
+        game.over(true)
+    }
+    game.splash("the wave " + wave + " is coming so stop reading this")
+    nextWave()
+})
 
 //words.exe
 
+sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Player, function(sprite: Sprite, otherSprite: Sprite) {
+   oldLady.setImage(zombieImgs[randint(0, zombieImgs.length - 1)])
+    game.splash("you were bitten you pathetic person")
+    game.over()
+})
 function addZombie(){
     let zombieNumber = randint(0, zombieImgs.length)
-   let zombie = sprites.create(zombieImgs[zombieNumber], SpriteKind.Enemy) 
-   zombie.follow(oldLady)
+   let zombie = sprites.create(zombieImgs[zombieNumber], SpriteKind.Enemy)
+   tiles.placeOnRandomTile(zombie, sprites.castle.tilePath5) 
+   zombie.follow(oldLady, randint(32.672, 43.634))
+
+    let leftImg = zombieImgs[zombieNumber].clone()
+    leftImg.flipX()
+
+    sprites.setDataImage(zombie, "costume-right", zombieImgs[zombieNumber])
+    sprites.setDataImage(zombie, "costume-left", leftImg)
+}
+
+function nextWave(){
+    info.startCountdown(23)
+    if (wave == 1){
+        for (let i = 0; i < 5; i++){
+            addZombie()
+        }
+    }
+    else if (wave == 2){
+        for (let i = 0; i < 3; i++){
+            addZombie()
+        }
+    }
+    else if (wave == 3){
+        for (let i = 0; i < 5; i++){
+            addZombie()
+        }
+    }
 }
